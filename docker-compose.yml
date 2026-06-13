@@ -1,0 +1,62 @@
+# docker-compose.yml - Unifi Network Controller
+services:
+  unifi-controller:
+    image: lscr.io/linuxserver/unifi-network-application:latest
+    container_name: unifi-controller
+    restart: unless-stopped
+    environment:
+      # Set your local timezone
+      TZ: America/New_York
+      # User and group IDs to match the host user
+      PUID: 1000
+      PGID: 1000
+      # MongoDB connection details
+      MONGO_USER: unifi
+      MONGO_PASS: ${MONGO_PASSWORD}
+      MONGO_HOST: unifi-mongo
+      MONGO_PORT: 27017
+      MONGO_DBNAME: unifi
+      MONGO_AUTHSOURCE: admin
+    volumes:
+      # Persist controller configuration and data
+      - unifi-config:/config
+    ports:
+      # Web admin interface (HTTPS)
+      - "8443:8443"
+      # Device communication
+      - "8080:8080"
+      # STUN port for device discovery
+      - "3478:3478/udp"
+      # AP discovery (L2 adoption)
+      - "10001:10001/udp"
+      # Guest portal HTTPS
+      - "8843:8843"
+      # Guest portal HTTP
+      - "8880:8880"
+      # Throughput measurement
+      - "6789:6789"
+      # Device discovery broadcast
+      - "1900:1900/udp"
+    depends_on:
+      - unifi-mongo
+
+  unifi-mongo:
+    image: mongo:4.4
+    container_name: unifi-mongo
+    restart: unless-stopped
+    volumes:
+      # Persist MongoDB data
+      - unifi-mongo-data:/data/db
+      # Init script to create the database user
+      - ./init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_USER: unifi
+      MONGO_PASS: ${MONGO_PASSWORD}
+      MONGO_DBNAME: unifi
+      MONGO_AUTHSOURCE: admin
+
+volumes:
+  unifi-config:
+  unifi-mongo-data:
