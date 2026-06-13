@@ -21,13 +21,15 @@ esac
 echo
 echo "# .env - Keep credentials out of the compose file
 MONGO_PASSWORD=$password
-MONGO_ROOT_PASSWORD=$password" > .env
+MONGO_ROOT_PASSWORD=$password" > ./src/.env
 
 chmod +x stop_server.sh
-chmod +x init-mongo.sh
+chmod +x src/init-mongo.sh
 
 # Launch the controller and MongoDB
-docker compose up -d
+#docker compose up -d
+
+docker compose -f ./src/docker-compose.yml up -d
 
 # Watch the logs to confirm startup completes
 docker compose logs -f unifi-controller
