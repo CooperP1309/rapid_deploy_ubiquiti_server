@@ -1,7 +1,7 @@
 # Rapid Deploy Ubuquiti Server
 
 ### Quick Note
-I did not make the docker compose and mogno init files!
+I did not make the docker compose and mongo init files!
 
 I got them from this tutorial: 
 https://oneuptime.com/blog/post/2026-02-08-how-to-run-unifi-controller-in-docker/view
